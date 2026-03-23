@@ -11,7 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Thêm cấu hình tắt CSRF cho các route cụ thể tại đây
+        $middleware->validateCsrfTokens(except: [
+            '/khach-hang/*', 
+            // Bạn có thể thêm các route khác vào đây nếu cần, ví dụ: '/hoa-don/*'
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

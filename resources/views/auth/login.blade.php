@@ -2,7 +2,6 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Đăng nhập - Hệ thống quản lý điện</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -26,54 +25,34 @@
         </div>
 
         <h2 class="text-xl font-bold text-center text-slate-800 mb-1">Đăng Nhập Hệ Thống</h2>
-        <p class="text-sm text-slate-400 text-center mb-8">Hệ thống quản lý điện</p>
+        <p class="text-sm text-slate-400 text-center mb-6">Hệ thống quản lý điện</p>
 
-        <form onsubmit="handleLogin(event)">
-            <div class="mb-5">
-                <label class="block text-sm font-bold text-slate-700 mb-2">Email</label>
-                <input type="text" id="account" class="input-box" placeholder="admin@dienluc.vn" required>
+        @if($errors->any())
+        <div class="mb-5 p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm font-semibold text-center flex items-center justify-center gap-2">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>{{ $errors->first() }}</span>
+        </div>
+        @endif
+
+        <form action="/login" method="POST">
+            @csrf <div class="mb-5">
+                <label class="block text-sm font-bold text-slate-700 mb-2">Mã nhân viên / Mã khách hàng</label>
+                <input type="text" name="account" value="{{ old('account') }}" class="input-box" placeholder="Ví dụ: NV001 hoặc K01">
             </div>
             <div class="mb-8">
                 <label class="block text-sm font-bold text-slate-700 mb-2">Mật khẩu</label>
-                <input type="password" id="password" class="input-box" placeholder="••••••••" required>
+                <input type="password" name="password" class="input-box" placeholder="••••••••">
             </div>
 
-            <button type="submit" id="btnLogin" class="btn-login mb-6">
+            <button type="submit" class="btn-login mb-6">
                 Đăng Nhập
             </button>
         </form>
 
         <div class="text-center text-sm text-slate-500">
-            Chưa có tài khoản? <a href="#" class="text-blue-600 font-bold hover:underline">Đăng ký ngay</a>
+            Chưa có tài khoản? <a href="{{ route('register') }}" class="text-blue-600 font-bold hover:underline">Đăng ký ngay</a>
         </div>
     </div>
 
-    <script>
-    async function handleLogin(e) {
-        e.preventDefault();
-        const btn = document.getElementById('btnLogin');
-        btn.disabled = true; btn.innerText = 'Đang xử lý...';
-
-        const payload = {
-            account: document.getElementById('account').value,
-            password: document.getElementById('password').value
-        };
-
-        try {
-            const res = await fetch('/login', {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content 
-                },
-                body: JSON.stringify(payload)
-            });
-            const data = await res.json();
-            if (res.ok) window.location.href = data.redirect;
-            else alert(data.message);
-        } catch (err) { alert('Lỗi kết nối máy chủ!'); }
-        finally { btn.disabled = false; btn.innerText = 'Đăng Nhập'; }
-    }
-    </script>
 </body>
 </html>

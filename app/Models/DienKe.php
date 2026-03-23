@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -11,5 +10,8 @@ class DienKe extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
-    protected $fillable = ['madk', 'makh', 'ngaysx', 'ngaylap', 'trangthai'];
+    
+    public $timestamps = false;
+
+    protected $fillable = ['madk', 'makh', 'diachi_lapdat', 'ngaysx', 'ngaylap', 'trangthai'];
 }
