@@ -16,14 +16,7 @@
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
-
     <div class="login-card">
-        <div class="flex justify-center mb-6">
-            <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-blue-200">
-                <i class="fa-solid fa-user-plus text-3xl"></i>
-            </div>
-        </div>
-
         <h2 class="text-xl font-bold text-center text-slate-800 mb-1">Đăng Ký Tài Khoản</h2>
         <p class="text-sm text-slate-400 text-center mb-8">Dành cho khách hàng mới</p>
 
@@ -36,54 +29,44 @@
 
         <form action="/register" method="POST">
             @csrf
-            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">Mã KH (13 ký tự)</label>
-                    <input type="text" name="makh" value="{{ old('makh') }}" class="input-box" placeholder="K202603220001">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Số điện thoại (*)</label>
+                    <input type="text" name="dt" value="{{ old('dt') }}" class="input-box" placeholder="09xxxxxxxx" required>
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2">Họ và tên</label>
-                    <input type="text" name="tenkh" value="{{ old('tenkh') }}" class="input-box" placeholder="Nguyễn Văn A">
+                    <input type="text" name="tenkh" value="{{ old('tenkh') }}" class="input-box" placeholder="Nguyễn Văn A" required>
                 </div>
             </div>
 
             <div class="mb-4">
-                <label class="block text-sm font-bold text-slate-700 mb-2">Địa chỉ</label>
-                <input type="text" name="diachi" value="{{ old('diachi') }}" class="input-box" placeholder="Số 123, Đường ABC...">
+                <label class="block text-sm font-bold text-slate-700 mb-2">Địa chỉ nhà</label>
+                <input type="text" name="diachi" value="{{ old('diachi') }}" class="input-box" placeholder="Số nhà, tên đường..." required>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">Số điện thoại</label>
-                    <input type="text" name="dt" value="{{ old('dt') }}" class="input-box" placeholder="09xxxxxxxx">
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">Số CMND (9 số)</label>
-                    <input type="text" name="cmnd" value="{{ old('cmnd') }}" class="input-box" placeholder="123456789">
-                </div>
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-slate-700 mb-2">Email (Không bắt buộc)</label>
+                <input type="email" name="email" value="{{ old('email') }}" class="input-box" placeholder="khachhang@gmail.com">
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2">Mật khẩu</label>
-                    <input type="password" name="password" class="input-box" placeholder="••••••••">
+                    <input type="password" name="password" class="input-box" required>
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2">Xác nhận MK</label>
-                    <input type="password" name="password_confirmation" class="input-box" placeholder="••••••••">
+                    <input type="password" name="password_confirmation" class="input-box" required>
                 </div>
             </div>
 
-            <button type="submit" class="btn-login mb-6">
-                Đăng Ký Ngay
-            </button>
+            <button type="submit" class="btn-login mb-6">Đăng Ký Ngay</button>
         </form>
 
         <div class="text-center text-sm text-slate-500">
             Đã có tài khoản? <a href="{{ route('login') }}" class="text-blue-600 font-bold hover:underline">Đăng nhập</a>
         </div>
     </div>
-
 </body>
 </html>

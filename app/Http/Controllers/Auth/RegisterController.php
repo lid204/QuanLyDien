@@ -10,68 +10,45 @@ use App\Models\DienKe;
 
 class RegisterController extends Controller
 {
-    public function register(Request $request)
-    {
-        // 1. Kiểm tra dữ liệu đầu vào 
+    public function register(Request $request) {
+        // 1. Kiểm tra dữ liệu (Bỏ CMND, Email tùy chọn)
         $request->validate([
-            'makh' => 'required|size:13|unique:khach_hang,makh',
+            'dt' => 'required|digits_between:10,12|unique:khach_hang,dt', 
             'tenkh' => 'required|max:50',
             'diachi' => 'required|max:100',
-            'dt' => 'required|digits_between:10,12|unique:khach_hang,dt',
-            'cmnd' => 'required|digits:9|unique:khach_hang,cmnd', 
+            'email' => 'nullable|email|unique:khach_hang,email', 
             'password' => 'required|min:6|confirmed' 
         ], [
-            'makh.required' => 'Vui lòng nhập Mã khách hàng.',
-            'makh.size' => 'Mã khách hàng phải đúng 13 ký tự.',
-            'makh.unique' => 'Mã khách hàng này đã tồn tại.',
-            
-            'tenkh.required' => 'Vui lòng nhập Họ và tên.',
-            
-            'diachi.required' => 'Vui lòng nhập Địa chỉ.',
-            
-            'dt.required' => 'Vui lòng nhập Số điện thoại.',
-            'dt.digits_between' => 'Số điện thoại phải từ 10 đến 12 số.',
-            'dt.unique' => 'Số điện thoại này đã được đăng ký.',
-            
-            'cmnd.required' => 'Vui lòng nhập Số CMND.',
-            'cmnd.digits' => 'CMND phải có đúng 9 chữ số.',
-            'cmnd.unique' => 'Số CMND này đã tồn tại trong hệ thống.',
-            
-            'password.required' => 'Vui lòng nhập Mật khẩu.',
-            'password.min' => 'Mật khẩu phải từ 6 ký tự trở lên.',
+            'dt.required' => 'Số điện thoại là bắt buộc.',
+            'dt.unique' => 'Số điện thoại này đã được sử dụng.',
             'password.confirmed' => 'Mật khẩu xác nhận không khớp.'
         ]);
 
         try {
-            // 2. Dùng Transaction: Đăng ký khách hàng phải đi kèm cấp Điện kế
             DB::transaction(function () use ($request) {
-                // Tạo hồ sơ khách hàng
+                // Tự động phát sinh Mã KH đúng 13 ký tự (KH + 11 số ngẫu nhiên)
+                $ma13KyTu = 'KH' . str_pad(rand(0, 99999999999), 11, '0', STR_PAD_LEFT);
+
                 $kh = KhachHang::create([
-                    'makh' => $request->makh,
+                    'makh' => $ma13KyTu,
                     'tenkh' => $request->tenkh,
+                    'email' => $request->email,
                     'diachi' => $request->diachi,
                     'dt' => $request->dt,
-                    'cmnd' => $request->cmnd,
                     'password' => Hash::make($request->password),
                 ]);
 
-                // Tự động cấp 01 điện kế cho nhà của khách hàng
+                // Tự động cấp Điện kế kèm theo
                 DienKe::create([
                     'madk' => 'DK' . rand(100000, 999999), 
                     'makh' => $kh->makh,
                     'diachi_lapdat' => $request->diachi,
-                    'ngaysx' => now(),
-                    'ngaylap' => now(),
-                    'trangthai' => 1 
+                    'ngaysx' => now(), 'ngaylap' => now(), 'trangthai' => 1 
                 ]);
             });
-
-            // Nếu đăng ký thành công, tự động chuyển về trang Đăng nhập
-            return redirect('/login')->with('success', 'Đăng ký thành công! Hãy đăng nhập.');
-
+            return redirect('/login')->with('success', 'Đăng ký thành công! Hãy dùng SĐT để đăng nhập.');
         } catch (\Exception $e) {
-            // Nếu có lỗi hệ thống, báo lỗi và giữ lại dữ liệu khách vừa nhập
-            return back()->withErrors(['register_error' => 'Lỗi hệ thống: ' . $e->getMessage()])->withInput();
+            return back()->withErrors(['register_error' => 'Lỗi: ' . $e->getMessage()])->withInput();
         }
     }
 }

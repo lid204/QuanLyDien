@@ -10,16 +10,16 @@
         body { background-color: #f8fafc; font-family: 'Inter', sans-serif; }
         .input-field { border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 0.6rem 0.75rem; font-size: 0.875rem; width: 100%; outline: none; background-color: #f8fafc; }
         .sidebar-item { 
-    display: flex; 
-    align-items: center; 
-    padding: 0.75rem 1rem; 
-    border-radius: 0.5rem; 
-    color: #64748b; 
-    margin-bottom: 0.25rem; 
-    text-decoration: none;
-    white-space: nowrap; /* THÊM DÒNG NÀY: Để chữ không nhảy xuống hàng */
-    transition: 0.2s;    /* THÊM DÒNG NÀY: Để hiệu ứng hover mượt hơn */
-}
+            display: flex; 
+            align-items: center; 
+            padding: 0.75rem 1rem; 
+            border-radius: 0.5rem; 
+            color: #64748b; 
+            margin-bottom: 0.25rem; 
+            text-decoration: none;
+            white-space: nowrap; /* Giữ chữ trên một hàng */
+            transition: 0.2s;
+        }
         .sidebar-item.active { background-color: #eff6ff; color: #2563eb; font-weight: 600; }
         .alert { padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem; font-size: 0.875rem; font-weight: 500; }
     </style>
@@ -32,9 +32,9 @@
             <h1 class="text-sm font-bold text-slate-800 leading-tight">Hệ thống quản lý điện</h1>
         </div>
         <nav>
-            <a href="{{ route('dashboard') }}" class="sidebar-item"><i class="fa-solid fa-home mr-3"></i>Trang chủ</a>
-            <a href="{{ route('khach-hang.index') }}" class="sidebar-item active"><i class="fa-solid fa-users mr-3"></i>Quản lý khách hàng</a>
-            <a href="#" class="sidebar-item"><i class="fa-solid fa-file-invoice-dollar mr-3"></i>Quản lý hóa đơn</a>
+            <a href="{{ route('dashboard') }}" class="sidebar-item"><i class="fa-solid fa-home w-5 mr-3"></i>Trang chủ</a>
+            <a href="{{ route('khach-hang.index') }}" class="sidebar-item active"><i class="fa-solid fa-users w-5 mr-3"></i>Quản lý khách hàng</a>
+            <a href="#" class="sidebar-item"><i class="fa-solid fa-file-invoice-dollar w-5 mr-3"></i>Quản lý hóa đơn</a>
         </nav>
     </aside>
 
@@ -74,24 +74,48 @@
             </div>
 
             <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mb-8">
-                <form id="customerForm" action="/khach-hang/store" method="POST">
+                <form id="customerForm" action="{{ session('is_updating') ? '/khach-hang/update' : '/khach-hang/store' }}" method="POST">
                     @csrf
+                    <input type="hidden" name="update_makh" id="update_makh" value="{{ old('update_makh', session('is_updating') ? old('makh') : '') }}">
+
                     <div class="grid grid-cols-6 gap-4 items-end">
-                        <div><label class="block text-[10px] font-bold text-slate-500 mb-2 uppercase">Mã KH *</label>
-                             <input type="text" name="makh" id="makh" class="input-field" value="{{ old('makh') }}"></div>
-                        <div><label class="block text-[10px] font-bold text-slate-500 mb-2 uppercase">Họ tên *</label>
-                             <input type="text" name="tenkh" id="tenkh" class="input-field" value="{{ old('tenkh') }}"></div>
-                        <div><label class="block text-[10px] font-bold text-slate-500 mb-2 uppercase">Địa chỉ *</label>
-                             <input type="text" name="diachi" id="diachi" class="input-field" value="{{ old('diachi') }}"></div>
-                        <div><label class="block text-[10px] font-bold text-slate-500 mb-2 uppercase">Điện thoại *</label>
-                             <input type="text" name="dt" id="dt" class="input-field" value="{{ old('dt') }}"></div>
-                        <div><label class="block text-[10px] font-bold text-slate-500 mb-2 uppercase">CMND *</label>
-                             <input type="text" name="cmnd" id="cmnd" class="input-field" value="{{ old('cmnd') }}"></div>
-                        <div><label class="block text-[10px] font-bold text-slate-500 mb-2 uppercase" id="labelPass">Mật khẩu</label>
-                             <input type="password" name="password" id="password" class="input-field" placeholder="123456"></div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-2 uppercase">Mã KH *</label>
+                            <input type="text" name="makh" id="makh" class="input-field" value="{{ old('makh') }}" 
+                                   {{ session('is_updating') ? 'readonly style=background-color:#f1f5f9' : '' }}>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-2 uppercase">Họ tên *</label>
+                            <input type="text" name="tenkh" id="tenkh" class="input-field" value="{{ old('tenkh') }}">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-2 uppercase">Địa chỉ *</label>
+                            <input type="text" name="diachi" id="diachi" class="input-field" value="{{ old('diachi') }}">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-2 uppercase">Điện thoại *</label>
+                            <input type="text" name="dt" id="dt" class="input-field" value="{{ old('dt') }}">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-2 uppercase">CMND *</label>
+                            <input type="text" name="cmnd" id="cmnd" class="input-field" value="{{ old('cmnd') }}">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-2 uppercase" id="labelPass">
+                                {{ session('is_updating') ? 'Mật khẩu mới' : 'Mật khẩu' }}
+                            </label>
+                            <input type="password" name="password" id="password" class="input-field" 
+                                   placeholder="{{ session('is_updating') ? 'Để trống nếu không đổi' : '123456' }}">
+                        </div>
                     </div>
+
                     <div class="mt-6 flex gap-2" id="actionButtons">
-                        <button type="submit" class="bg-slate-900 text-white px-8 py-2.5 rounded-lg font-bold text-xs hover:bg-black transition shadow-sm">Thêm mới</button>
+                        @if(session('is_updating'))
+                            <button type="submit" class="bg-slate-900 text-white px-8 py-2.5 rounded-lg font-bold text-xs hover:bg-black transition shadow-sm">Cập nhật</button>
+                            <button type="button" onclick="window.location.reload()" class="bg-white border border-slate-200 text-slate-600 px-8 py-2.5 rounded-lg font-bold text-xs">Hủy</button>
+                        @else
+                            <button type="submit" class="bg-slate-900 text-white px-8 py-2.5 rounded-lg font-bold text-xs hover:bg-black transition shadow-sm">Thêm mới</button>
+                        @endif
                     </div>
                 </form>
             </div>
@@ -140,6 +164,9 @@
         const form = document.getElementById('customerForm');
         form.action = '/khach-hang/update'; 
         
+        // Gán mã khách hàng vào input ẩn để đánh dấu trạng thái update
+        document.getElementById('update_makh').value = makh;
+        
         document.getElementById('makh').value = makh;
         document.getElementById('makh').readOnly = true;
         document.getElementById('makh').style.backgroundColor = "#f1f5f9";
@@ -151,7 +178,7 @@
         document.getElementById('password').placeholder = "Để trống nếu không đổi";
 
         document.getElementById('actionButtons').innerHTML = `
-            <button type="submit" class="bg-slate-900 text-white px-8 py-2.5 rounded-lg font-bold text-xs hover:bg-black">Cập nhật</button>
+            <button type="submit" class="bg-slate-900 text-white px-8 py-2.5 rounded-lg font-bold text-xs hover:bg-black transition shadow-sm">Cập nhật</button>
             <button type="button" onclick="window.location.reload()" class="bg-white border border-slate-200 text-slate-600 px-8 py-2.5 rounded-lg font-bold text-xs">Hủy</button>
         `;
         window.scrollTo({ top: 0, behavior: 'smooth' });

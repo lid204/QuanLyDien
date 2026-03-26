@@ -28,23 +28,24 @@
         <p class="text-sm text-slate-400 text-center mb-6">Hệ thống quản lý điện</p>
 
         @if($errors->any())
-        <div class="mb-5 p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm font-semibold text-center flex items-center justify-center gap-2">
+        <div class="mb-5 p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm font-semibold text-center flex items-center justify-center gap-2 italic">
             <i class="fa-solid fa-circle-exclamation"></i>
             <span>{{ $errors->first() }}</span>
         </div>
         @endif
 
         <form action="/login" method="POST">
-            @csrf <div class="mb-5">
-                <label class="block text-sm font-bold text-slate-700 mb-2">Mã nhân viên / Mã khách hàng</label>
-                <input type="text" name="account" value="{{ old('account') }}" class="input-box" placeholder="Ví dụ: NV001 hoặc K01">
+            @csrf 
+            <div class="mb-5">
+                <label class="block text-sm font-bold text-slate-700 mb-2">Mã nhân viên / Số điện thoại khách hàng</label>
+                <input type="text" name="account" value="{{ old('account') }}" class="input-box" placeholder="Ví dụ: NV001 hoặc 09xxxxxxxx">
             </div>
             <div class="mb-8">
                 <label class="block text-sm font-bold text-slate-700 mb-2">Mật khẩu</label>
                 <input type="password" name="password" class="input-box" placeholder="••••••••">
             </div>
 
-            <button type="submit" class="btn-login mb-6">
+            <button type="submit" class="btn-login mb-6 shadow-lg shadow-slate-200 transition-all active:scale-95">
                 Đăng Nhập
             </button>
         </form>

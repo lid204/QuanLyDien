@@ -81,32 +81,51 @@ class KhachHangController extends Controller
 
     // 3. Cập nhật thông tin khách hàng 
     public function update(Request $request) {
-        $kh = KhachHang::find($request->makh);
-        
-        if (!$kh) {
-            return redirect()->back()->with('error', 'Không tìm thấy khách hàng.');
-        }
-
-        $request->validate([
-            'tenkh' => 'required|max:50',
-            'diachi' => 'required|max:100',
-            'dt' => 'required|digits_between:10,12|unique:khach_hang,dt,' . $kh->makh . ',makh',
-            'cmnd' => 'required|digits:9|unique:khach_hang,cmnd,' . $kh->makh . ',makh',
-        ], [
-            'cmnd.digits' => 'CMND phải có đúng 9 chữ số.',
-            'dt.unique' => 'Số điện thoại này đã thuộc về người khác.',
-            'cmnd.unique' => 'Số CMND này đã thuộc về người khác.',
-        ]);
-
-        $data = $request->only(['tenkh', 'diachi', 'dt', 'cmnd']);
-        
-        if ($request->filled('password')) { 
-            $data['password'] = Hash::make($request->password); 
-        }
-
-        $kh->update($data);
-        return redirect()->back()->with('success', 'Cập nhật thông tin khách hàng thành công!');
+    $kh = KhachHang::find($request->makh);
+    
+    if (!$kh) {
+        return redirect()->back()->with('error', 'Không tìm thấy khách hàng.');
     }
+
+    $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+        'tenkh' => 'required|max:50',
+        'diachi' => 'required|max:100',
+        // Đã thêm numeric để bắt lỗi khi nhập chữ
+        'dt' => 'required|numeric|digits_between:10,12|unique:khach_hang,dt,' . $kh->makh . ',makh',
+        'cmnd' => 'required|numeric|digits:9|unique:khach_hang,cmnd,' . $kh->makh . ',makh',
+    ], [
+        'tenkh.required' => 'Vui lòng nhập Họ và tên.',
+        'diachi.required' => 'Vui lòng nhập Địa chỉ.',
+        
+        'dt.required' => 'Vui lòng nhập Số điện thoại.',
+        'dt.numeric' => 'Số điện thoại chỉ được nhập số.', 
+        'dt.digits_between' => 'Số điện thoại phải từ 10 đến 12 số.',
+        'dt.unique' => 'Số điện thoại này đã thuộc về người khác.',
+        
+        'cmnd.required' => 'Vui lòng nhập Số CMND.',
+        'cmnd.numeric' => 'Số CMND chỉ được nhập số.',
+        'cmnd.digits' => 'CMND phải có đúng 9 chữ số.',
+        'cmnd.unique' => 'Số CMND này đã thuộc về người khác.',
+    ]);
+
+    if ($validator->fails()) {
+        // Gửi flags is_updating để file Blade giữ nguyên trạng thái nút "Cập nhật"
+        return redirect()->back()
+            ->withErrors($validator)
+            ->withInput()
+            ->with('is_updating', true); 
+    }
+
+    $data = $request->only(['tenkh', 'diachi', 'dt', 'cmnd']);
+    
+    // Chỉ mã hóa và cập nhật nếu có nhập mật khẩu mới
+    if ($request->filled('password')) { 
+        $data['password'] = Hash::make($request->password); 
+    }
+
+    $kh->update($data);
+    return redirect()->back()->with('success', 'Cập nhật thông tin khách hàng thành công!');
+}
 
     // 4. Xóa khách hàng
     public function destroy(Request $request) {
